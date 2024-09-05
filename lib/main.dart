@@ -32,6 +32,18 @@ class MyAppState extends ChangeNotifier {
     current = WordPair.random();
     notifyListeners(); // notifica a todos los elementos que escuchan a myAppState
   }
+
+  // ↓ Add the code below.
+  var favorites = <WordPair>[];
+
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -54,11 +66,22 @@ class MyHomePage extends StatelessWidget {
             SizedBox(height: 10),
             BigCard(pair: pair),
             SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Continuar'),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Continuar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Favorito'),
+                ),
+              ],
             )
           ],
         ),
