@@ -51,7 +51,9 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center, //para alinear los elementos al centro
           children: [
             TopWelcomeText(style: style),
+            SizedBox(height: 10),
             BigCard(pair: pair),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
                 appState.getNext();
