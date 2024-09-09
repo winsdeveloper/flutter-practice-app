@@ -106,14 +106,26 @@ class FavoritesPageList extends StatelessWidget {
     var appState = context.watch<MyAppState>();
    // final List<String> entries = <String>['A', 'B', 'C'];
     final List<WordPair> entries = appState.favorites;
+
     final List<int> colorCodes = <int>[200, 400, 100];
+
     print('lista de favoritos: $entries' );
+
+    var theme = Theme.of(context);
+
+    final style = theme.textTheme.displaySmall!.copyWith(
+      color: theme.colorScheme.inversePrimary,
+    );
 
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            GenericTopText(
+              style: style,
+              text: 'Tu lista de favoritos:', // Pasar el texto aquí
+            ),
             Expanded(
               child: ListView.builder(
                   padding: const EdgeInsets.all(8),
@@ -153,11 +165,15 @@ class GeneratorPage extends StatelessWidget {
     final style = theme.textTheme.displaySmall!.copyWith(
       color: theme.colorScheme.inversePrimary,
     );
+
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center, //para alinear los elementos al centro
           children: [
-            TopWelcomeText(style: style),
+            GenericTopText(
+              style: style,
+              text: 'Dale like al nombre más original:',
+            ),
             SizedBox(height: 10),
             BigCard(pair: pair),
             SizedBox(height: 10),
@@ -189,24 +205,29 @@ class GeneratorPage extends StatelessWidget {
 }
 
 
-class TopWelcomeText extends StatelessWidget {
-  const TopWelcomeText({
+class GenericTopText extends StatelessWidget {
+  const GenericTopText({
     super.key,
     required this.style,
+    required this.text, // Añadir esta propiedad
   });
 
   final TextStyle style;
+  final String text; // Añadir esta propiedad
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: Text('Dale like al nombre más original:',
+      child: Text(
+        text, // Usar la propiedad text aquí
         style: style,
-        textAlign: TextAlign.center,),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
+
 
 class BigCard extends StatelessWidget {
   const BigCard({
