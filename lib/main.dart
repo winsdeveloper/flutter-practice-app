@@ -25,6 +25,59 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  var selectedIndex = 0;     // ← Add this property.
+
+  @override
+  Widget build(BuildContext context) {
+
+    Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = GeneratorPage();
+        break;
+      case 1:
+        page = FavoritesPageList();
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
+
+    return Scaffold(
+      body: Container(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        child: page,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Tus me gusta!',
+          ),
+        ],
+        currentIndex: selectedIndex,
+        onTap: (value) {
+          setState(() {
+            selectedIndex = value;
+          });
+          print('selected: $value');
+        },
+      ),
+    );
+  }
+}
+
+
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   // ↓ Add this.
@@ -37,6 +90,7 @@ class MyAppState extends ChangeNotifier {
   var favorites = <WordPair>[];
 
   void toggleFavorite() {
+    print('favoritos --> $favorites');
     if (favorites.contains(current)) {
       favorites.remove(current);
     } else {
@@ -46,7 +100,41 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class FavoritesPageList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+   // final List<String> entries = <String>['A', 'B', 'C'];
+    final List<WordPair> entries = appState.favorites;
+    final List<int> colorCodes = <int>[200, 400, 100];
+    print('lista de favoritos: $entries' );
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: entries.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      height: 60,
+                      color: Colors.deepPurpleAccent[colorCodes[index]],
+                      child: Center(child: Text('Nomber favorito: ${entries[index]}'))
+                    );
+                  }
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
@@ -54,11 +142,18 @@ class MyHomePage extends StatelessWidget {
     var pair = appState.current;
     var theme = Theme.of(context);
 
+    // ↓ Add this.
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
     final style = theme.textTheme.displaySmall!.copyWith(
       color: theme.colorScheme.inversePrimary,
     );
-    return Scaffold(
-      body: Center(
+    return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center, //para alinear los elementos al centro
           children: [
@@ -69,27 +164,30 @@ class MyHomePage extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Dale Like'),
+                ),
+                SizedBox(width: 10),// brinda espacios entre elementos
+                ElevatedButton.icon(
                   onPressed: () {
                     appState.getNext();
                   },
-                  child: Text('Continuar'),
+                  icon: Icon(Icons.navigate_next),
+                  label: Text('Siguiente'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  },
-                  child: Text('Favorito'),
-                ),
+
               ],
             )
           ],
         ),
-      ),
-
     );
   }
 }
+
 
 class TopWelcomeText extends StatelessWidget {
   const TopWelcomeText({
@@ -103,7 +201,9 @@ class TopWelcomeText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: Text('Bienvenido:',style: style),
+      child: Text('Dale like al nombre más original:',
+        style: style,
+        textAlign: TextAlign.center,),
     );
   }
 }
